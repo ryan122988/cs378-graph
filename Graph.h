@@ -15,7 +15,7 @@
 #include <cstddef> // size_t
 #include <utility> // make_pair, pair
 #include <vector> // vector
-
+#include <set>
 using namespace std;
 
 // -----
@@ -28,11 +28,11 @@ class Graph {
         // typedefs
         // --------
 
-        typedef int vertex_descriptor; // fix!
-        typedef pair<vertex_descriptor, vertex_descriptor> edge_descriptor; // fix!
+        typedef int vertex_descriptor;
+        typedef pair<vertex_descriptor, vertex_descriptor> edge_descriptor;
 
-        typedef int* vertex_iterator; // fix!
-        typedef pair<vertex_descriptor, vertex_descriptor>* edge_iterator; // fix!
+        typedef vector<vertex_descriptor>::iterator vertex_iterator; 
+        typedef vector<pair<vertex_descriptor, vertex_descriptor> >::iterator edge_iterator;
         typedef int* adjacency_iterator; // fix!
 
         typedef std::size_t vertices_size_type;
@@ -57,6 +57,12 @@ class Graph {
             } else { 
                 b = false;
             }
+/*            cout << "SOURCE:  " << source << endl;
+            cout << "TARGETS: " << endl;
+            for (int i = 0 ; i < a.g[source].size(); ++i) {
+                cout << a.g[source][i] << " ";
+            }
+            cout << endl;*/
             return std::make_pair(ed, b);}
 
         // ----------
@@ -104,35 +110,50 @@ class Graph {
         /**
 	 * <your documentation>
 	 */
-        friend std::pair<edge_iterator, edge_iterator> edges (const Graph&) {
-            // <your code>
-            edge_iterator b;
-            edge_iterator e;
-            return std::make_pair(b, e);}
+        friend std::pair<edge_iterator, edge_iterator> edges (const Graph& a) {
+            vector<pair<vertex_descriptor, vertex_descriptor> > allEdges;
+            for(int i = 0; i < a.g.size(); ++i) {
+                vector<vertex_descriptor> vertexEdges = a.g[i];
+                cout << "__source: " << i << endl;
+                cout << "__targers: "<< endl;
+                for(int i2 = 0; i2 < a.g[i].size(); i2++) {
+                    cout << vertexEdges[i2] << " ";
+                    pair<vertex_descriptor, vertex_descriptor> edge(i, vertexEdges[i2]);
+                    allEdges.push_back(edge);
+                }
+                cout << endl;
+            }
+            cout << "second of the first one: " << (*allEdges.begin()).second << endl;
+            return std::make_pair(allEdges.begin(), allEdges.end());}
 
         // ---------
         // num_edges
         // ---------
 
         /**
-	 * <your documentation>
+	 * @param a Graph to determine the number of edges on
+         * @return The total number of edges in a
 	 */
-        friend edges_size_type num_edges (const Graph&) {
-            // <your code>
-            edges_size_type s;
-            return s;}
+        friend edges_size_type num_edges (const Graph& a) {
+
+            edges_size_type total = 0;
+            for(int i = 0; i < a.g.size(); ++i) {
+                vector<vertex_descriptor> vertexEdges = a.g[i];
+                total += vertexEdges.size();
+            }
+            return total;}
 
         // ------------
         // num_vertices
         // ------------
 
         /**
-	 * <your documentation>
+	 * @param Graph a to determine number of vertices
+         * @return The total number of vertices in a
 	 */
-        friend vertices_size_type num_vertices (const Graph&) {
-            // <your code>
-            vertices_size_type s;
-            return s;}
+        friend vertices_size_type num_vertices (const Graph& a) {
+            return a.g.size();
+        }
 
         // ------
         // source
@@ -174,10 +195,8 @@ class Graph {
 	 * <your documentation>
 	 */
         friend std::pair<vertex_iterator, vertex_iterator> vertices (const Graph& a) {
-            vertex_iterator b = vertex_iterator(0);
-            vertex_iterator e = vertex_iterator(a.g.size() - 1);
-            return std::make_pair(b, e);}
-
+            vector<vertex_descriptor> iter(0, a.g.size());         
+            return std::make_pair(iter.begin(), iter.end());}
     private:
         // ----
         // data
