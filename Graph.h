@@ -221,8 +221,8 @@ class Graph {
         // -----
 
         /**
-* <your documentation>
-*/
+	 * <your documentation>
+	 */
         bool valid () const {
             // <your code>
             return true;}
@@ -233,11 +233,9 @@ class Graph {
         // ------------
 
         /**
-* <your documentation>
-*/
+	 * <your documentation>
+	 */
         Graph () {
-            // <your code>
-	    //g(vector<vertex_descriptor>());
             allEdges.reserve(10);
             allVertices.reserve(10);
             g.reserve(10);
@@ -259,8 +257,57 @@ class Graph {
 * <your documentation>
 */
 template <typename G>
-bool has_cycle (const G& g) {
-    return true;}
+bool has_cycle (G& g) {
+    vector<typename G::vertex_descriptor> exploredVertices;
+    vector<typename G::vertex_descriptor> stackedVertices;
+
+    pair<typename G::vertex_iterator, typename G::vertex_iterator> allVertices = vertices(g);
+    typename G::vertex_iterator b = allVertices.first;
+    typename G::vertex_iterator e = allVertices.second;
+    
+    assert(b != e);
+
+    while(b != e) {
+        if (has_cycle_help(g, *b, exploredVertices, stackedVertices)) {
+            return true;
+        }
+        ++b;
+    } 
+   
+    return false;
+}
+
+template <typename G>
+bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::vertex_descriptor> exploredVertices, vector<typename G::vertex_descriptor> stackedVertices) {
+
+    if(find(exploredVertices.begin(), exploredVertices.end(), v) == exploredVertices.end()) {
+        exploredVertices.push_back(v);
+        stackedVertices.push_back(v);
+      
+        pair<typename G::adjacency_iterator, typename G::adjacency_iterator> adj = adjacent_vertices(v, g);
+        typename G::adjacency_iterator b = adj.first;
+        typename G::adjacency_iterator e = adj.second;
+        if (b != e) {
+            while(b != e) {
+                typename G::vertex_descriptor adjVertex = *b;
+                if( find(exploredVertices.begin(), exploredVertices.end(), adjVertex) == exploredVertices.end() 
+                     && has_cycle_help(g, adjVertex, exploredVertices, stackedVertices)) {
+                    return true;
+                } else if (find(stackedVertices.begin(), stackedVertices.end(), adjVertex) != stackedVertices.end()) {
+                    return true;
+                }
+                ++b;
+            }
+            
+        }
+    }
+    typename vector<typename G::vertex_descriptor>::iterator foundStack = find(stackedVertices.begin(), stackedVertices.end(), v);
+    if(foundStack != stackedVertices.end()){ 
+        stackedVertices.erase(foundStack); 
+    } 
+    return false;
+}
+                       
 
 // ----------------
 // topological_sort
@@ -279,6 +326,9 @@ void topological_sort (const G& g, OI x) {
     *x = 0;
     ++x;
     *x = 1;
-    }
 
+    //if (has_cycle(g)) {
+     //   throw not_a_dag("Must be DAG");
+    //}
+}
 #endif // Graph_h
