@@ -91,6 +91,25 @@ struct TestGraph : CppUnit::TestFixture {
     edge_descriptor edFH;
     edge_descriptor edGH;
 
+    graph_type h;
+
+    vertex_descriptor hvA;
+    vertex_descriptor hvB;
+    vertex_descriptor hvC;
+    vertex_descriptor hvD;
+    vertex_descriptor hvE;
+    vertex_descriptor hvF;
+
+
+    edge_descriptor hedAB;
+    edge_descriptor hedAC;
+    edge_descriptor hedAE;
+    edge_descriptor hedBD;
+    edge_descriptor hedBE;
+    edge_descriptor hedCD;
+    edge_descriptor hedDE;
+    edge_descriptor hedDF;
+
     // -----
     // setUp
     // -----
@@ -114,7 +133,26 @@ struct TestGraph : CppUnit::TestFixture {
         edDF = add_edge(vdD, vdF, g).first;
         edFD = add_edge(vdF, vdD, g).first;
         edFH = add_edge(vdF, vdH, g).first;
-        edGH = add_edge(vdG, vdH, g).first;}
+        edGH = add_edge(vdG, vdH, g).first;
+
+        hvA = add_vertex(h);
+        hvB = add_vertex(h);
+        hvC = add_vertex(h);
+        hvD = add_vertex(h);
+        hvE = add_vertex(h);
+        hvF = add_vertex(h);
+
+        hedAB = add_edge(hvA, hvB, h).first;
+        hedAC = add_edge(hvA, hvC, h).first;
+        hedAE = add_edge(hvA, hvE, h).first;
+        hedBD = add_edge(hvB, hvD, h).first;
+        hedBE = add_edge(hvB, hvE, h).first;
+        hedCD = add_edge(hvC, hvD, h).first;
+        hedDE = add_edge(hvD, hvE, h).first;
+        hedDF = add_edge(hvD, hvF, h).first;
+
+
+    }
 
     // -------------
     // test_add_edge
@@ -154,6 +192,23 @@ struct TestGraph : CppUnit::TestFixture {
         }
         CPPUNIT_ASSERT(i == 2);
     }
+
+    void test_adjacent_vertices_3() {
+        pair<adjacency_iterator, adjacency_iterator> p = adjacent_vertices(vdB, g); 
+        adjacency_iterator b = p.first;
+        adjacency_iterator e = p.second;
+        CPPUNIT_ASSERT(b != e);
+        if (b != e) {
+             vertex_descriptor vd = *b;
+             CPPUNIT_ASSERT(vd == vdD);
+        }
+        ++b;
+        if(b != e){
+             vertex_descriptor vd = *b; 
+             CPPUNIT_ASSERT(vd == vdE);
+        }
+    }
+    
 
     // ---------
     // test_edge
@@ -252,6 +307,9 @@ struct TestGraph : CppUnit::TestFixture {
     void test_has_cycle () {
         CPPUNIT_ASSERT(has_cycle(g));}
 
+    void test_has_cycle_2() { 
+        CPPUNIT_ASSERT(!has_cycle(h));}
+
     // ---------------------
     // test_topological_sort
     // ---------------------
@@ -269,6 +327,7 @@ struct TestGraph : CppUnit::TestFixture {
     CPPUNIT_TEST(test_add_edge);
     CPPUNIT_TEST(test_adjacent_vertices);
     CPPUNIT_TEST(test_adjacent_vertices_2);
+    CPPUNIT_TEST(test_adjacent_vertices_3);
     CPPUNIT_TEST(test_edge);
     CPPUNIT_TEST(test_edge_2);
     CPPUNIT_TEST(test_edges);
@@ -278,6 +337,8 @@ struct TestGraph : CppUnit::TestFixture {
     CPPUNIT_TEST(test_target);
     CPPUNIT_TEST(test_vertex);
     CPPUNIT_TEST(test_vertices);
+    CPPUNIT_TEST(test_has_cycle);
+    CPPUNIT_TEST(test_has_cycle_2);
     CPPUNIT_TEST_SUITE_END();};
 
 
