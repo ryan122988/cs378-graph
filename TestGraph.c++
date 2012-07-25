@@ -142,6 +142,19 @@ struct TestGraph : CppUnit::TestFixture {
             vertex_descriptor vd = *b;
             CPPUNIT_ASSERT(vd == vdC);}}
 
+    void test_adjacent_vertices_2 () {
+        int i = 0;
+        std::pair<adjacency_iterator, adjacency_iterator> p = adjacent_vertices(vdF, g);
+        adjacency_iterator b = p.first;
+        adjacency_iterator e = p.second;
+        CPPUNIT_ASSERT(b != e);
+        while (b != e) {
+            ++b;
+            ++i;
+        }
+        CPPUNIT_ASSERT(i == 2);
+    }
+
     // ---------
     // test_edge
     // ---------
@@ -150,6 +163,11 @@ struct TestGraph : CppUnit::TestFixture {
         std::pair<edge_descriptor, bool> p = edge(vdA, vdB, g);
         CPPUNIT_ASSERT(p.first == edAB);
         CPPUNIT_ASSERT(p.second == true);}
+ 
+    void test_edge_2() { 
+        std::pair<edge_descriptor, bool> p = edge(vdA, vdF, g);
+        CPPUNIT_ASSERT(p.second == false);
+    }
 
     // ----------
     // test_edges
@@ -157,42 +175,18 @@ struct TestGraph : CppUnit::TestFixture {
 
     void test_edges () {
         std::pair<edge_iterator, edge_iterator> p = edges(g);
-        cout << "FFFFFFFFUUUUUU: " << (*p.first).second << endl;
         edge_iterator b = p.first;
         edge_iterator e = p.second;
         CPPUNIT_ASSERT(b != e);
         if (b != e) {
             edge_descriptor ed = *b;
-            cout << "ed: " << ed.first << " " << ed.second << endl;
-            //CPPUNIT_ASSERT(ed == edAB);
+            CPPUNIT_ASSERT(ed == edAB);
         }
         ++b;
         if (b != e) {
             edge_descriptor ed = *b;
-	    cout << "ed: " << ed.first << " " << ed.second << endl;
             CPPUNIT_ASSERT(ed == edAC);}
-        ++b;
-        if (b != e) {
-            edge_descriptor ed = *b;
-            cout << "ed: " << ed.first << " " << ed.second << endl;
-            //CPPUNIT_ASSERT(ed == edAB);
-        }
-        ++b;
-        if (b != e) {
-            edge_descriptor ed = *b;
-	    cout << "ed: " << ed.first << " " << ed.second << endl;
-        }
-        ++b;
-        if (b != e) {
-            edge_descriptor ed = *b;
-	    cout << "ed: " << ed.first << " " << ed.second << endl;
-            //CPPUNIT_ASSERT(ed == edAC);}
-        }}
-	/*while( b != e){
-		cout<<*b<<" ";
-		++b;
-	}
-	cout<<endl;*/
+        ++b;}
 
     // --------------
     // test_num_edges
@@ -274,7 +268,9 @@ struct TestGraph : CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(TestGraph);
     CPPUNIT_TEST(test_add_edge);
     CPPUNIT_TEST(test_adjacent_vertices);
+    CPPUNIT_TEST(test_adjacent_vertices_2);
     CPPUNIT_TEST(test_edge);
+    CPPUNIT_TEST(test_edge_2);
     CPPUNIT_TEST(test_edges);
     CPPUNIT_TEST(test_num_edges);
     CPPUNIT_TEST(test_num_vertices);
@@ -297,7 +293,7 @@ int main () {
     cout << "TestGraph.c++" << endl;
 
     CppUnit::TextTestRunner tr;
-    //tr.addTest(TestGraph< adjacency_list<setS, vecS, directedS> >::suite());
+    tr.addTest(TestGraph< adjacency_list<setS, vecS, directedS> >::suite());
     tr.addTest(TestGraph<Graph>::suite()); // uncomment
     tr.run();
 
