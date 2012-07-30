@@ -508,8 +508,9 @@ struct TestGraph : CppUnit::TestFixture {
         }catch (invalid_argument& not_a_dag){ 
             CPPUNIT_ASSERT(false);
         }
-        std::cout << std::endl << std::endl;
-        CPPUNIT_ASSERT(out.str() == "4 5 3 1 2 0 ");
+         
+        std::cout << out.str() << std::endl;
+        CPPUNIT_ASSERT(out.str() == "4 5 3 1 2 0");
     }
 
    void test_topological_sort_3 () {

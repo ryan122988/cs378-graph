@@ -343,12 +343,32 @@ void topological_sort ( G& g, OI x) {
     if (has_cycle(g)) {
         throw boost::not_a_dag();
     }
-    *x = 2;
-    ++x;
-    *x = 0;
-    ++x;
-    *x = 1;
+    vector< vector<typename G::vertex_descriptor> > adj_list; 
 
+    pair<typename G::vertex_iterator, typename G::vertex_iterator> verts = vertices(g);
+    typename G::vertex_iterator b = verts.first;
+    typename G::vertex_iterator e = verts.second;
+
+    while(b != e) {
+        vector<typename G::vertex_descriptor> vertex(*b);
+        adj_list.push_back(vertex);
+        ++b;
+    }
+    assert(b == e); 
+     
+    for (unsigned int i = 0; i < adj_list.size(); ++i) {
+        pair<typename G::adjacency_iterator, typename G::adjacency_iterator> adj = adjacent_vertices(i, g);
+        typename G::adjacency_iterator b = adj.first;
+        typename G::adjacency_iterator e = adj.second;
+        while (b != e) {
+            adj_list[i].push_back(*b);
+            ++b;
+        }
+        assert(b == e); 
+ 
+    }
+
+    
 
 }
 #endif // Graph_h
