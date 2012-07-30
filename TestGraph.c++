@@ -36,6 +36,7 @@ adjacency_list.hpp
 #include "cppunit/TestSuite.h" // TestSuite
 #include "cppunit/TextTestRunner.h" // TestRunner
 #include "Graph.h"
+//#include <boost/graph/topological_sort.hpp>
 
 using namespace std;
 // ---------
@@ -98,7 +99,7 @@ struct TestGraph : CppUnit::TestFixture {
     vertex_descriptor hvD;
     vertex_descriptor hvE;
     vertex_descriptor hvF;
-
+    vertex_descriptor hvG;
 
     edge_descriptor hedAB;
     edge_descriptor hedAC;
@@ -132,6 +133,7 @@ struct TestGraph : CppUnit::TestFixture {
         vdF = add_vertex(g);
         vdG = add_vertex(g);
         vdH = add_vertex(g);
+        
         edAB = add_edge(vdA, vdB, g).first;
         edAC = add_edge(vdA, vdC, g).first;
         edAE = add_edge(vdA, vdE, g).first;
@@ -150,6 +152,7 @@ struct TestGraph : CppUnit::TestFixture {
         hvD = add_vertex(h);
         hvE = add_vertex(h);
         hvF = add_vertex(h);
+        hvG = add_vertex(h); 
 
         hedAB = add_edge(hvA, hvB, h).first;
         hedAC = add_edge(hvA, hvC, h).first;
@@ -333,7 +336,7 @@ struct TestGraph : CppUnit::TestFixture {
  
     void test_num_vertices_3() {
         vertices_size_type vs = num_vertices(h); 
-        CPPUNIT_ASSERT(vs == 6);
+        CPPUNIT_ASSERT(vs == 7);
     }
 
     // -----------
@@ -509,14 +512,14 @@ struct TestGraph : CppUnit::TestFixture {
             CPPUNIT_ASSERT(false);
         }
          
-        std::cout << out.str() << std::endl;
-        CPPUNIT_ASSERT(out.str() == "4 5 3 1 2 0");
+        std::cout << "|| " << out.str() << "||" << std::endl;
+        CPPUNIT_ASSERT(out.str() == "4 5 3 1 2 0 6 ");
     }
 
    void test_topological_sort_3 () {
         std::ostringstream out;
         try{ 
-            topological_sort(q, std::ostream_iterator<vertex_descriptor>(std::cout, " "));
+            topological_sort(q, std::ostream_iterator<vertex_descriptor>(out, " "));
         }catch (invalid_argument& not_a_dag){ 
             CPPUNIT_ASSERT(true);
         }
@@ -569,9 +572,9 @@ struct TestGraph : CppUnit::TestFixture {
     CPPUNIT_TEST(test_vertices_2);
     CPPUNIT_TEST(test_vertices_3);
 
-    CPPUNIT_TEST(test_has_cycle);
+    //CPPUNIT_TEST(test_has_cycle);
     CPPUNIT_TEST(test_has_cycle_2);
-    CPPUNIT_TEST(test_has_cycle_3);
+    //CPPUNIT_TEST(test_has_cycle_3);
   
     //CPPUNIT_TEST(test_boost_topological_sort);
     //CPPUNIT_TEST(test_boost_topological_sort_2);

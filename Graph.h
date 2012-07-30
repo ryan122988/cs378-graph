@@ -227,9 +227,9 @@ class Graph {
         // -----
 
         /**
-	 * graph validation
+	     * graph validation
          * The size of the vector of vectors for edge mapping should be the same as the number of vertices
-	 */
+	     */
         bool valid () const {
             return (g.size() == allVertices.size());
         }
@@ -240,9 +240,9 @@ class Graph {
         // ------------
 
         /**
-	 * Default constructor
+	     * Default constructor
          * Reserves ten space in the edge and vertex vectors, as well as in the vertex mapping vector of vectors
-	 */
+	     */
         Graph () {
             allEdges.reserve(10);
             allVertices.reserve(10);
@@ -274,7 +274,6 @@ bool has_cycle (G& g) {
     typename G::vertex_iterator b = allVertices.first;
     typename G::vertex_iterator e = allVertices.second;
     
-    assert(b != e);
 
     while(b != e) {
         if (has_cycle_help(g, *b, exploredVertices, stackedVertices)) {
@@ -282,7 +281,7 @@ bool has_cycle (G& g) {
         }
         ++b;
     } 
-   
+
     return false;
 }
 
@@ -297,9 +296,10 @@ bool has_cycle (G& g) {
  */
 template <typename G>
 bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::vertex_descriptor> exploredVertices, vector<typename G::vertex_descriptor> stackedVertices) {
-
+    
     if(find(exploredVertices.begin(), exploredVertices.end(), v) == exploredVertices.end()) {
         exploredVertices.push_back(v);
+        
         stackedVertices.push_back(v);
       
         pair<typename G::adjacency_iterator, typename G::adjacency_iterator> adj = adjacent_vertices(v, g);
@@ -307,6 +307,7 @@ bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::ve
         typename G::adjacency_iterator e = adj.second;
         if (b != e) {
             while(b != e) {
+                cout << endl;
                 typename G::vertex_descriptor adjVertex = *b;
                 if( find(exploredVertices.begin(), exploredVertices.end(), adjVertex) == exploredVertices.end() 
                      && has_cycle_help(g, adjVertex, exploredVertices, stackedVertices)) {
@@ -321,8 +322,10 @@ bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::ve
         }
     }
     typename vector<typename G::vertex_descriptor>::iterator foundStack = find(stackedVertices.begin(), stackedVertices.end(), v);
+
     if(foundStack != stackedVertices.end()){ 
         stackedVertices.erase(foundStack); 
+        //cout << *foundStack << " ";
     } 
     return false;
 }
@@ -343,32 +346,61 @@ void topological_sort ( G& g, OI x) {
     if (has_cycle(g)) {
         throw boost::not_a_dag();
     }
-    vector< vector<typename G::vertex_descriptor> > adj_list; 
 
-    pair<typename G::vertex_iterator, typename G::vertex_iterator> verts = vertices(g);
-    typename G::vertex_iterator b = verts.first;
-    typename G::vertex_iterator e = verts.second;
+    vector<typename G::vertex_descriptor> exploredVertices;
+    vector<typename G::vertex_descriptor> stackedVertices;
 
+    pair<typename G::vertex_iterator, typename G::vertex_iterator> allVertices = vertices(g);
+    typename G::vertex_iterator b = allVertices.first;
+    typename G::vertex_iterator e = allVertices.second;
+    vector<typename G::vertex_descriptor> result;
+    assert(b != e);
+    cout << endl;
     while(b != e) {
-        vector<typename G::vertex_descriptor> vertex(*b);
-        adj_list.push_back(vertex);
+        topo_sort_help(g, *b, exploredVertices, stackedVertices, result);
         ++b;
-    }
-    assert(b == e); 
-     
-    for (unsigned int i = 0; i < adj_list.size(); ++i) {
-        pair<typename G::adjacency_iterator, typename G::adjacency_iterator> adj = adjacent_vertices(i, g);
-        typename G::adjacency_iterator b = adj.first;
-        typename G::adjacency_iterator e = adj.second;
-        while (b != e) {
-            adj_list[i].push_back(*b);
-            ++b;
-        }
-        assert(b == e); 
- 
-    }
-
+    } 
+    //copy(result.begin(), result.end(), ostream_iterator<typename G::vertex_descriptor>(cout, "|")); 
+    copy(result.begin(), result.end(), x);
     
 
 }
+
+template <typename G>
+void topo_sort_help(G& g, typename G::vertex_descriptor v, vector<typename G::vertex_descriptor> exploredVertices, vector<typename G::vertex_descriptor> stackedVertices,
+ vector<typename G::vertex_descriptor>& result) {
+    
+    if(find(exploredVertices.begin(), exploredVertices.end(), v) == exploredVertices.end()) {
+        exploredVertices.push_back(v);
+        
+        stackedVertices.push_back(v);
+      
+        pair<typename G::adjacency_iterator, typename G::adjacency_iterator> adj = adjacent_vertices(v, g);
+        typename G::adjacency_iterator b = adj.first;
+        typename G::adjacency_iterator e = adj.second;
+        if (b != e) {
+            while(b != e) {
+                typename G::vertex_descriptor adjVertex = *b;
+                topo_sort_help(g, adjVertex, exploredVertices, stackedVertices, result);
+
+                ++b;
+            }
+            assert(b == e);
+            
+        }
+    }
+    typename vector<typename G::vertex_descriptor>::iterator foundStack = find(stackedVertices.begin(), stackedVertices.end(), v);
+    
+    if(foundStack != stackedVertices.end()){ 
+        stackedVertices.erase(foundStack); 
+        if(find(result.begin(), result.end(), *foundStack) == result.end())
+            result.push_back(*foundStack); 
+    } 
+
+}
+
+
+
+
+    
 #endif // Graph_h
