@@ -10,7 +10,7 @@
 // --------
 // includes
 // --------
-
+#include <boost/graph/exception.hpp>
 #include <cassert> // assert
 #include <cstddef> // size_t
 #include <utility> // make_pair, pair
@@ -74,9 +74,11 @@ class Graph {
          * @return The vertex descriptor (int) of the added vertex
 	 */
         friend vertex_descriptor add_vertex (Graph& a) {
-	    vector<vertex_descriptor > vertex(0);
+	    vector<vertex_descriptor> vertex(0);
 	    a.g.push_back(vertex);
             a.allVertices.push_back(a.g.size() - 1);
+            
+            assert(a.g.size() > 0); 
             return (a.g.size() - 1);}
 
         // -----------------
@@ -89,6 +91,8 @@ class Graph {
          * @return A pair of adjacency iterators that will iterate over all adjacent vertices. 
 	 */
         friend std::pair<adjacency_iterator, adjacency_iterator> adjacent_vertices (vertex_descriptor vertex, Graph& a) {
+            assert(vertex >= 0);
+
             adjacency_iterator b = adjacency_iterator();
             adjacency_iterator e = adjacency_iterator();
             return std::make_pair(a.g[vertex].begin(), a.g[vertex].end());}
@@ -104,6 +108,8 @@ class Graph {
          * @return Pair, an edge_descriptor built from the vertex_descriptors, bool is true if edge in the graph
 	 */
         friend std::pair<edge_descriptor, bool> edge (vertex_descriptor source, vertex_descriptor target, Graph& a) {
+            assert(source < a.g.size() && target < a.g.size() && source >= 0 && target >= 0);
+            
             bool b; 
             edge_descriptor ed = make_pair(source, target); 
             vertex_iterator iter = find(a.g[source].begin(), a.g[source].end(), target);
@@ -201,7 +207,7 @@ class Graph {
 	 * @param Graph to get the vertices from 
          * @return Begin and end iterators over the vertices of Graph a. 
 	 */
-        friend std::pair<vertex_iterator, vertex_iterator> vertices ( Graph& a) {
+        friend std::pair<vertex_iterator, vertex_iterator> vertices (Graph& a) {
             return std::make_pair(a.allVertices.begin(), a.allVertices.end());}
 
     private:
@@ -221,11 +227,12 @@ class Graph {
         // -----
 
         /**
-	 * <your documentation>
+	 * graph validation
+         * The size of the vector of vectors for edge mapping should be the same as the number of vertices
 	 */
         bool valid () const {
-            // <your code>
-            return true;}
+            return (g.size() == allVertices.size());
+        }
 
     public:
         // ------------
@@ -233,7 +240,8 @@ class Graph {
         // ------------
 
         /**
-	 * <your documentation>
+	 * Default constructor
+         * Reserves ten space in the edge and vertex vectors, as well as in the vertex mapping vector of vectors
 	 */
         Graph () {
             allEdges.reserve(10);
@@ -253,8 +261,9 @@ class Graph {
 
 /**
 * depth-first traversal
-* three colors
-* <your documentation>
+* graph has a cycle if a back edge exists
+* @param Graph g the graph to determine the existence of a cycle in
+* @return Whether the graph has a cycle
 */
 template <typename G>
 bool has_cycle (G& g) {
@@ -277,6 +286,15 @@ bool has_cycle (G& g) {
     return false;
 }
 
+/**
+ * has_cycle_help recursive traversal
+ * graph has a cycle if a back edge exists
+ * @param g Graph to check if cycle exists
+ * @param v Vertex to traverse from
+ * @param exploredVertices Vertices that have already been traversed
+ * @param stackedVertices Vertices that are currently on the recursion stack
+ * @return Whether the graph has a cycle
+ */
 template <typename G>
 bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::vertex_descriptor> exploredVertices, vector<typename G::vertex_descriptor> stackedVertices) {
 
@@ -298,6 +316,7 @@ bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::ve
                 }
                 ++b;
             }
+            assert(b == e);
             
         }
     }
@@ -320,15 +339,16 @@ bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::ve
 * @throws Boost's not_a_dag exception if !has_cycle()
 */
 template <typename G, typename OI>
-void topological_sort (const G& g, OI x) {
+void topological_sort ( G& g, OI x) {
+    if (has_cycle(g)) {
+        throw boost::not_a_dag();
+    }
     *x = 2;
     ++x;
     *x = 0;
     ++x;
     *x = 1;
 
-    //if (has_cycle(g)) {
-     //   throw not_a_dag("Must be DAG");
-    //}
+
 }
 #endif // Graph_h
