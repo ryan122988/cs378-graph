@@ -448,44 +448,6 @@ struct TestGraph : CppUnit::TestFixture {
 
     void test_has_cycle_3() { 
         CPPUNIT_ASSERT(has_cycle(q));}
-/*
-    // ---------------------
-    // test_boost_topological_sort
-    // ---------------------
-
-   void test_boost_topological_sort () {
-        if(typeid(graph_type).name() == "Graph") {
-            CPPUNIT_ASSERT(true);
-            return;
-        }
-        std::ostringstream out;
-        boost::topological_sort(g, std::ostream_iterator<vertex_descriptor>(std::cout, " "));
-        std::cout << std::endl;
-        //CPPUNIT_ASSERT(out.str() == "2 0 1 ");
-    }
-
-   void test_boost_topological_sort_2 () {
-        if(typeid(graph_type).name() == "Graph") {
-            CPPUNIT_ASSERT(true);
-            return;
-        }
-        std::ostringstream out;
-        std::cout << std::endl;
-        boost::topological_sort(h, std::ostream_iterator<vertex_descriptor>(std::cout, " "));
-        std::cout << std::endl << std::endl;
-        //CPPUNIT_ASSERT(out.str() == "2 0 1 ");
-    }
-
-   void test_boost_topological_sort_3 () {
-        if(typeid(graph_type).name() == "Graph") {
-            CPPUNIT_ASSERT(true);
-            return;
-        }
-        std::ostringstream out;
-        boost::topological_sort(q, std::ostream_iterator<vertex_descriptor>(std::cout, " "));
-        std::cout << std::endl;
-        //CPPUNIT_ASSERT(out.str() == "2 0 1 ");
-    }*/
 
 
    // ---------------------
@@ -495,24 +457,23 @@ struct TestGraph : CppUnit::TestFixture {
    void test_topological_sort () {
         std::ostringstream out;
         try{ 
-            topological_sort(g, std::ostream_iterator<vertex_descriptor>(std::cout, " "));
+            topological_sort(g, std::ostream_iterator<vertex_descriptor>(out, " "));
         }catch (invalid_argument& not_a_dag){ 
             CPPUNIT_ASSERT(true);
         }
-        std::cout << std::endl;
-        //CPPUNIT_ASSERT(out.str() == "2 0 1 ");
+
+       
     }
 
    void test_topological_sort_2 () {
         std::ostringstream out;
-        std::cout << std::endl;
         try{ 
             topological_sort(h, std::ostream_iterator<vertex_descriptor>(out, " "));
         }catch (invalid_argument& not_a_dag){ 
             CPPUNIT_ASSERT(false);
         }
          
-        std::cout << "|| " << out.str() << "||" << std::endl;
+
         CPPUNIT_ASSERT(out.str() == "4 5 3 1 2 0 6 ");
     }
 
@@ -523,8 +484,8 @@ struct TestGraph : CppUnit::TestFixture {
         }catch (invalid_argument& not_a_dag){ 
             CPPUNIT_ASSERT(true);
         }
-        std::cout << std::endl;
-        //CPPUNIT_ASSERT(out.str() == "2 0 1 ");
+
+        
     }
 
     // -----
@@ -572,13 +533,9 @@ struct TestGraph : CppUnit::TestFixture {
     CPPUNIT_TEST(test_vertices_2);
     CPPUNIT_TEST(test_vertices_3);
 
-    //CPPUNIT_TEST(test_has_cycle);
+    CPPUNIT_TEST(test_has_cycle);
     CPPUNIT_TEST(test_has_cycle_2);
-    //CPPUNIT_TEST(test_has_cycle_3);
-  
-    //CPPUNIT_TEST(test_boost_topological_sort);
-    //CPPUNIT_TEST(test_boost_topological_sort_2);
-    //CPPUNIT_TEST(test_boost_topological_sort_3);
+    CPPUNIT_TEST(test_has_cycle_3);
   
     CPPUNIT_TEST(test_topological_sort);
     CPPUNIT_TEST(test_topological_sort_2);

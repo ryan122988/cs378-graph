@@ -296,7 +296,8 @@ bool has_cycle (G& g) {
  */
 template <typename G>
 bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::vertex_descriptor> exploredVertices, vector<typename G::vertex_descriptor> stackedVertices) {
-    
+    assert(v >= 0);   
+ 
     if(find(exploredVertices.begin(), exploredVertices.end(), v) == exploredVertices.end()) {
         exploredVertices.push_back(v);
         
@@ -307,7 +308,7 @@ bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::ve
         typename G::adjacency_iterator e = adj.second;
         if (b != e) {
             while(b != e) {
-                cout << endl;
+
                 typename G::vertex_descriptor adjVertex = *b;
                 if( find(exploredVertices.begin(), exploredVertices.end(), adjVertex) == exploredVertices.end() 
                      && has_cycle_help(g, adjVertex, exploredVertices, stackedVertices)) {
@@ -325,7 +326,6 @@ bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::ve
 
     if(foundStack != stackedVertices.end()){ 
         stackedVertices.erase(foundStack); 
-        //cout << *foundStack << " ";
     } 
     return false;
 }
@@ -336,9 +336,8 @@ bool has_cycle_help(G& g, typename G::vertex_descriptor v, vector<typename G::ve
 // ----------------
 
 /**
-* depth-first traversal
-* two colors
-* <your documentation>
+* depth-first traversal sorts and copies to output iterator
+* @param Graph g to get topo sort of
 * @throws Boost's not_a_dag exception if !has_cycle()
 */
 template <typename G, typename OI>
@@ -354,18 +353,27 @@ void topological_sort ( G& g, OI x) {
     typename G::vertex_iterator b = allVertices.first;
     typename G::vertex_iterator e = allVertices.second;
     vector<typename G::vertex_descriptor> result;
-    assert(b != e);
-    cout << endl;
+
     while(b != e) {
         topo_sort_help(g, *b, exploredVertices, stackedVertices, result);
         ++b;
     } 
-    //copy(result.begin(), result.end(), ostream_iterator<typename G::vertex_descriptor>(cout, "|")); 
+    assert(b == e);
+   
     copy(result.begin(), result.end(), x);
     
 
 }
 
+/**
+ * topo_sort_help recursive traversal
+ * adds vertex to sort if it was put on stackedVertices
+ * @param g Graph to check 
+ * @param v Vertex to traverse from
+ * @param exploredVertices Vertices that have already been traversed
+ * @param stackedVertices Vertices that are currently on the recursion stack
+ * @param result The result of the topological sort
+ */
 template <typename G>
 void topo_sort_help(G& g, typename G::vertex_descriptor v, vector<typename G::vertex_descriptor> exploredVertices, vector<typename G::vertex_descriptor> stackedVertices,
  vector<typename G::vertex_descriptor>& result) {
@@ -398,9 +406,6 @@ void topo_sort_help(G& g, typename G::vertex_descriptor v, vector<typename G::ve
     } 
 
 }
-
-
-
 
     
 #endif // Graph_h
